@@ -118,6 +118,7 @@
           cancelHandler() {
             this.input.name = ''
             this.input.email = ''
+            this.editID = null
           },
           editHandler(listID) {
             const { name, email, id } = this.contacts.filter(contact => contact.id === listID)[0]
