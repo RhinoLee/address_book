@@ -1,0 +1,13 @@
+{
+  "name": "address_book",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "json": "json-server --watch db.json -- port 8888"
+  },
+  "author": "Rhino",
+  "license": "MIT",
+  "dependencies": {
+    "json-server": "^0.16.3"
+  }
+}
