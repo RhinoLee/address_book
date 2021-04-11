@@ -58,7 +58,7 @@
               <div class="name">{{ contact.name }}</div>
               <a :href="'mailto:'+contact.email">{{ contact.email }}</a>
               <div class="btn-box">
-                <button class="update">修改</button>
+                <button @click.prevent="editHandler(contact.id)" class="edit">修改</button>
                 <button @click.prevent="deleteHandler(contact.id)" class="delete">刪除</button>
               </div>
             </li>
@@ -82,34 +82,59 @@
             name: '',
             email: ''
           },
+          editID: null,
           loading: false
         },
         methods: {
           createHandler() {
+            
             const { name, email } = this.input
             if (!name || !email) return
             this.loading = true
-            axios.post('http://localhost:3000/contact', this.input)
-            .then(res => {
-              this.contacts.push(res.data)
-              this.loading = false
-              this.cancelHandler()
-            })
-            .catch(err => {
-              console.log(err);
-            })
+
+            if ( this.editID ) {
+              axios.put(`http://localhost:3000/contact/${this.editID}`, this.input)
+              .then(res => {
+                this.contacts[this.editID - 1] = this.input
+                this.loading = false
+                this.cancelHandler()
+              })
+              .catch(err => {
+                console.log(err);
+              })
+            } else {
+              axios.post('http://localhost:3000/contact', this.input)
+              .then(res => {
+                this.contacts.push(res.data)
+                this.loading = false
+                this.cancelHandler()
+              })
+              .catch(err => {
+                console.log(err);
+              })
+            }
+            
           },
           cancelHandler() {
             this.input.name = ''
             this.input.email = ''
           },
-          deleteHandler(id) {
-            const target = this.contacts.filter(contact => contact.id === id)[0]
+          editHandler(listID) {
+            const { name, email, id } = this.contacts.filter(contact => contact.id === listID)[0]
+            this.editID = id
+            this.input = {
+              name,
+              email
+            }
+
+          },
+          deleteHandler(listID) {
+            const target = this.contacts.filter(contact => contact.id === listID)[0]
             if(confirm(`是否刪除會員： ${target.name}`)) {
               this.loading = true
-              axios.delete(`http://localhost:3000/contact/${id}`)
+              axios.delete(`http://localhost:3000/contact/${listID}`)
               .then(res => {
-                this.contacts.splice(id - 1, 1)
+                this.contacts.splice(listID - 1, 1)
                 this.loading = false
               })
               .catch(err => {
